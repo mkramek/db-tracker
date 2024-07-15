@@ -1,11 +1,8 @@
-import * as dotenv from "dotenv";
 import createSubscriber from "pg-listen";
 import { env } from "./config/index.js";
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 import { LogEntry } from "./models/entry.model.js";
 import readline from "node:readline";
-
-dotenv.config();
 
 /**
  * @typedef {object} NotificationPayload
@@ -44,31 +41,34 @@ if (process.platform === "win32") {
   });
 
   rl.on("SIGINT", function() {
+    console.log("Received SIGINT, shutting down...");
     process.emit("SIGINT");
   });
 }
 
 process.on("SIGINT", () => {
-  Promise.all([
-    subscriber.close(),
-    mongoose.disconnect(),
-  ]).then(() => {
+  console.log("Closing target DB connection...");
+  mongoose.disconnect().then(() => {
+    console.log("Target DB connection closed");
     process.exit(0);
   });
 });
 
 process.on("exit", () => {
-  subscriber.close();
+  console.log("Closing subscriber connection...");
+  subscriber.close().then(() => {
+    console.log("Subscriber connection closed");
+  });
 });
 
 (async () => {
   await subscriber.connect().then(() => {
-    console.log("Connected: PSQL's LISTEN");
+    console.log("Connected to PSQL's LISTEN subscriber");
   }).catch(console.error);
 
   await subscriber.listenTo(env.CHANNEL_NAME);
 
   mongoose.connect(env.TARGET_DATABASE_URL).then(() => {
-    console.log("Connected: MongoDB");
+    console.log("Connected to MongoDB");
   }).catch(console.error);
 })();
