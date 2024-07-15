@@ -1,0 +1,22 @@
+{
+  "name": "db-tracker",
+  "packageManager": "yarn@4.2.2",
+  "type": "module",
+  "dependencies": {
+    "dotenv": "16.4.5",
+    "express": "4.19.2",
+    "mongoose": "8.5.0",
+    "pg": "8.12.0",
+    "pg-listen": "1.7.0",
+    "zod": "3.23.8"
+  },
+  "devDependencies": {
+    "@types/mongoose": "5.11.97",
+    "@types/node": "20.14.10",
+    "eslint": "9.6.0",
+    "prettier": "3.3.2"
+  },
+  "scripts": {
+    "dev": "node app/index.js"
+  }
+}
