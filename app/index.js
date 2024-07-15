@@ -63,12 +63,12 @@ process.on("exit", () => {
 
 (async () => {
   await subscriber.connect().then(() => {
-    console.log("Connected to PSQL's LISTEN subscriber");
+    console.log("Connected to source DB's subscriber");
   }).catch(console.error);
 
   await subscriber.listenTo(env.CHANNEL_NAME);
 
   mongoose.connect(env.TARGET_DATABASE_URL).then(() => {
-    console.log("Connected to MongoDB");
+    console.log("Connected to target database");
   }).catch(console.error);
 })();
