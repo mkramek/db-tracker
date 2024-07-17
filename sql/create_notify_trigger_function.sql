@@ -22,12 +22,12 @@ BEGIN
             'schema', TG_TABLE_SCHEMA,
             'identity', TG_TABLE_NAME,
             'record', row_to_json(rec),
-            'old', row_to_json(dat)
+            'old', CASE WHEN TG_OP = 'UPDATE' OR TG_OP = 'DELETE' THEN row_to_json(dat) END
                );
 
 -- Notify the channel
     PERFORM pg_notify('core_db_event', payload);
 
-    RETURN rec;
+    RETURN COALESCE(NEW, OLD);
 END;
 $trigger$ LANGUAGE plpgsql;
